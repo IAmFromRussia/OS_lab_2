@@ -1,8 +1,4 @@
-﻿namespace DefaultNamespace
-{
-	public class Program
-	{
-		using System;
+﻿using System;
 using System.Diagnostics;
 using System.Threading;
 
@@ -109,6 +105,4 @@ namespace Test
             return currentString;
         }
     }
-}
-	}
 }
