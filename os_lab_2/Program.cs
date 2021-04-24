@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 namespace os_lab_2
 {
@@ -11,30 +12,39 @@ namespace os_lab_2
             ConsoleKeyInfo cki;
             Console.TreatControlCAsInput = true;
 
-            Console.WriteLine("Press the Escape (Esc) key to quit: \n");
-            Console.WriteLine("Current string: {0}", );
-
             var currentString = "1234567890";
+            Console.WriteLine("Press the Escape (Esc) key to quit: \n");
+            Console.WriteLine("Current string: {0}", currentString);
+
+            var one = "";
+            var two = "";
             
             do
             {
                 cki = Console.ReadKey();
-                Console.Write(" --> ");
 
-                var numbersThread = new Thread(() => NumberKeysOperations(cki, currentString));
-                var backspaceThread = new Thread(() => BackSpaceOperation(cki, currentString));
+                Console.Write(" --> ");
                 
                 if (cki.Key == ConsoleKey.Backspace)
                 {
+                    var backspaceThread = new Thread(() => two = BackSpaceOperation(cki, one));
                     backspaceThread.Start();
+                    currentString = two;
+                    backspaceThread.Interrupt();
+                    Console.WriteLine("Result bck: {0}", currentString);
+                    continue;
                 }
                 
-                numbersThread.Start();
+                var numbersThread = new Thread(() => one = NumberKeysOperations(cki, currentString));
                 
-                Console.WriteLine("Result: {0}", currentString);
-
+                numbersThread.Start();
+                currentString = one;
+                numbersThread.Interrupt();
+                
+                Console.WriteLine("Result: {0}\n one - {1}\n two - {2}", currentString, one, two);
 
             } while (cki.Key != ConsoleKey.Escape);
+            
         }
         
         private static string NumberKeysOperations(ConsoleKeyInfo currentKey, string currentString)
@@ -81,25 +91,25 @@ namespace os_lab_2
         
                 private static string BackSpaceOperation(ConsoleKeyInfo currentKey, string currentString)
                 {
-        
+
                     if (string.IsNullOrEmpty(currentString))
                     {
                         Console.WriteLine("string is empty! Add symbols");
-                    }
-                    else if (currentString.Length >= 5)
-                    {
-                        currentString = currentString.Remove(currentString.Length - 5);
                         return currentString;
                     }
-                    else
+
+                    if (currentString.Length >= 5)
                     {
-                        var warning = "\nWARNING!\n" +
-                                      "Add Symbols!\n" +
-                                      "Current string: " + currentString + "\n" +
-                                      "Amount of symbols: " + currentString.Length;
-                        Console.WriteLine(warning);
+                        currentString = currentString.Remove(currentString.Length - 6);
+                        Console.WriteLine("From method: {0}", currentString);
+                        return currentString;
                     }
-        
+
+                    var warning = "\nWARNING!\n" +
+                                  "Add Symbols!\n" +
+                                  "Current string: " + currentString + "\n" +
+                                  "Amount of symbols: " + currentString.Length;
+                    Console.WriteLine(warning);
                     return currentString;
                 }
     }
